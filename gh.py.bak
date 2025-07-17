@@ -1,0 +1,314 @@
+import os
+import sys
+import base64
+import requests
+import json
+from pathlib import Path
+import mimetypes
+import getpass
+
+class GitHubUploader:
+    def __init__(self, token, owner, repo):
+        self.token = token
+        self.owner = owner
+        self.repo = repo
+        self.base_url = f"https://api.github.com/repos/{owner}/{repo}/contents"
+        self.headers = {
+            "Authorization": f"token {token}",
+            "Accept": "application/vnd.github.v3+json"
+        }
+        self.api_base = "https://api.github.com"
+    
+    def get_user_repositories(self):
+        """Ambil daftar repository user"""
+        try:
+            response = requests.get(f"{self.api_base}/user/repos", headers=self.headers)
+            if response.status_code == 200:
+                repos = response.json()
+                return [(repo['name'], repo['private']) for repo in repos]
+            else:
+                print(f"Error fetching repositories: {response.status_code}")
+                return []
+        except Exception as e:
+            print(f"Error getting repositories: {e}")
+            return []
+    
+    def get_user_info(self):
+        """Ambil info user untuk mendapatkan username"""
+        try:
+            response = requests.get(f"{self.api_base}/user", headers=self.headers)
+            if response.status_code == 200:
+                return response.json().get('login')
+            else:
+                print(f"Error fetching user info: {response.status_code}")
+                return None
+        except Exception as e:
+            print(f"Error getting user info: {e}")
+            return None
+    
+    def create_repository(self, repo_name, description="", private=False):
+        """Buat repository baru"""
+        try:
+            data = {
+                "name": repo_name,
+                "description": description,
+                "private": private
+            }
+            
+            response = requests.post(
+                f"{self.api_base}/user/repos",
+                headers=self.headers,
+                json=data
+            )
+            
+            if response.status_code == 201:
+                print(f"✓ Repository '{repo_name}' berhasil dibuat!")
+                return True
+            else:
+                print(f"✗ Gagal membuat repository: {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+    def get_file_content(self, path):
+        """Ambil konten file dari GitHub untuk mendapatkan SHA jika file sudah ada"""
+        try:
+            response = requests.get(f"{self.base_url}/{path}", headers=self.headers)
+            if response.status_code == 200:
+                return response.json().get('sha')
+            return None
+        except Exception as e:
+            print(f"Error getting file content: {e}")
+            return None
+    
+    def upload_file(self, local_path, github_path):
+        """Upload file ke GitHub repository"""
+        try:
+            # Baca file
+            with open(local_path, 'rb') as f:
+                content = f.read()
+            
+            # Encode ke base64
+            encoded_content = base64.b64encode(content).decode('utf-8')
+            
+            # Cek apakah file sudah ada
+            existing_sha = self.get_file_content(github_path)
+            
+            # Siapkan data untuk upload
+            data = {
+                "message": f"Upload {github_path}",
+                "content": encoded_content
+            }
+            
+            # Jika file sudah ada, tambahkan SHA untuk update
+            if existing_sha:
+                data["sha"] = existing_sha
+                print(f"Updating existing file: {github_path}")
+            else:
+                print(f"Creating new file: {github_path}")
+            
+            # Upload ke GitHub
+            response = requests.put(
+                f"{self.base_url}/{github_path}",
+                headers=self.headers,
+                json=data
+            )
+            
+            if response.status_code in [200, 201]:
+                print(f"✓ Successfully uploaded: {github_path}")
+                return True
+            else:
+                print(f"✗ Failed to upload {github_path}: {response.status_code}")
+                print(f"Response: {response.text}")
+                return False
+                
+        except Exception as e:
+            print(f"✗ Error uploading {local_path}: {e}")
+            return False
+    
+    def should_ignore_file(self, file_path, script_name):
+        """Cek apakah file harus diabaikan"""
+        # Ignore file/folder yang dimulai dengan .
+        if file_path.name.startswith('.'):
+            return True
+        
+        # Ignore script python ini sendiri
+        if file_path.name == script_name:
+            return True
+        
+        # Ignore folder __pycache__
+        if '__pycache__' in str(file_path):
+            return True
+        
+        # Ignore file .pyc
+        if file_path.suffix == '.pyc':
+            return True
+        
+        return False
+    
+    def scan_and_upload(self, local_directory="."):
+        """Scan direktori dan upload semua file kecuali yang diabaikan"""
+        script_name = os.path.basename(sys.argv[0])
+        local_path = Path(local_directory).resolve()
+        
+        print(f"Scanning directory: {local_path}")
+        print(f"Script yang akan diabaikan: {script_name}")
+        print("-" * 50)
+        
+        uploaded_count = 0
+        failed_count = 0
+        
+        # Walk through semua file dan folder
+        for root, dirs, files in os.walk(local_path):
+            # Skip hidden directories
+            dirs[:] = [d for d in dirs if not d.startswith('.') and d != '__pycache__']
+            
+            for file in files:
+                file_path = Path(root) / file
+                
+                # Skip file yang harus diabaikan
+                if self.should_ignore_file(file_path, script_name):
+                    print(f"Skipping: {file_path.name}")
+                    continue
+                
+                # Hitung path relatif untuk GitHub
+                relative_path = file_path.relative_to(local_path)
+                github_path = str(relative_path).replace(os.sep, '/')
+                
+                # Upload file
+                if self.upload_file(file_path, github_path):
+                    uploaded_count += 1
+                else:
+                    failed_count += 1
+        
+        print("-" * 50)
+        print(f"Upload selesai!")
+        print(f"Berhasil: {uploaded_count} file")
+        print(f"Gagal: {failed_count} file")
+
+def get_repository_choice(token):
+    """Tampilkan daftar repository dan biarkan user memilih"""
+    temp_uploader = GitHubUploader(token, "temp", "temp")
+    
+    # Ambil info user
+    username = temp_uploader.get_user_info()
+    if not username:
+        print("❌ Tidak dapat mengambil informasi user!")
+        return None, None
+    
+    # Ambil daftar repository
+    repos = temp_uploader.get_user_repositories()
+    
+    print(f"\n👤 User: {username}")
+    print("📁 Daftar Repository:")
+    print("-" * 50)
+    print("0. [BUAT REPOSITORY BARU]")
+    
+    if not repos:
+        print("   Tidak ada repository yang ditemukan.")
+    else:
+        for i, (repo_name, is_private) in enumerate(repos, 1):
+            privacy_icon = "🔒" if is_private else "🔓"
+            print(f"{i}. {privacy_icon} {repo_name}")
+    
+    print("-" * 50)
+    
+    # Input pilihan
+    while True:
+        try:
+            choice = int(input("Pilih repository (nomor): ").strip())
+            
+            if choice == 0:
+                # Buat repository baru
+                repo_name = input("Nama repository baru: ").strip()
+                if not repo_name:
+                    print("❌ Nama repository tidak boleh kosong!")
+                    continue
+                
+                description = input("Deskripsi repository (opsional): ").strip()
+                
+                # Pilih privacy
+                privacy_choice = input("Repository private? (y/n): ").strip().lower()
+                is_private = privacy_choice == 'y'
+                
+                # Buat repository
+                if temp_uploader.create_repository(repo_name, description, is_private):
+                    return username, repo_name
+                else:
+                    print("❌ Gagal membuat repository!")
+                    continue
+            
+            elif 1 <= choice <= len(repos):
+                selected_repo = repos[choice - 1][0]
+                return username, selected_repo
+            
+            else:
+                print("❌ Pilihan tidak valid!")
+                continue
+                
+        except ValueError:
+            print("❌ Masukkan nomor yang valid!")
+            continue
+
+def main():
+    print("=" * 60)
+    print("            GITHUB REPOSITORY UPLOADER")
+    print("=" * 60)
+    
+    # Input token terlebih dahulu
+    try:
+        print("Masukkan GitHub Personal Access Token:")
+        print("(Token tidak akan terlihat saat diketik)")
+        token = getpass.getpass("Token: ").strip()
+        
+        if not token:
+            print("❌ Token tidak boleh kosong!")
+            return
+        
+        # Ambil daftar repository dan pilih
+        owner, repo = get_repository_choice(token)
+        
+        if not owner or not repo:
+            print("❌ Tidak dapat memilih repository!")
+            return
+        
+        
+        # Pilih direktori untuk diupload
+        print("\n📂 Pilih direktori untuk diupload:")
+        print("1. Direktori saat ini (.)")
+        print("2. Direktori lain")
+        
+        choice = input("Pilihan (1/2): ").strip()
+        
+        if choice == "1":
+            directory = "."
+        elif choice == "2":
+            directory = input("Masukkan path direktori: ").strip()
+            if not os.path.exists(directory):
+                print("❌ Direktori tidak ditemukan!")
+                return
+        else:
+            print("❌ Pilihan tidak valid!")
+            return
+        
+        # Konfirmasi
+        print(f"\n📁 Direktori: {os.path.abspath(directory)}")
+        print(f"🔗 Repository: {owner}/{repo}")
+        print("⚠️  Script ini akan mengupload SEMUA file di direktori tersebut")
+        print("   (kecuali file yang dimulai dengan '.' dan script ini sendiri)")
+        
+        confirm = input("\nLanjutkan? (y/n): ").strip().lower()
+        if confirm != 'y':
+            print("Upload dibatalkan.")
+            return
+        
+        # Mulai upload
+        print("\n🚀 Memulai upload...")
+        uploader = GitHubUploader(token, owner, repo)
+        uploader.scan_and_upload(directory)
+        
+    except KeyboardInterrupt:
+        print("\n\n❌ Upload dibatalkan oleh user.")
+    except Exception as e:
+        print(f"❌ Terjadi error: {e}")
+
+if __name__ == "__main__":
+    main()
