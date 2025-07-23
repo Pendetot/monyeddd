@@ -3,89 +3,81 @@
 @section('title', 'Manajemen Cuti')
 
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">Daftar Pengajuan Cuti</h5>
-                <div class="card-header-right">
-                    <a href="{{ route('hrd.cutis.create') }}" class="btn btn-primary btn-sm">
-                        <i class="feather icon-plus"></i> Tambah Pengajuan Cuti
-                    </a>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 col-xl-12">
+            <div class="card table-card">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <h5>Daftar Pengajuan Cuti</h5>
+                    
                 </div>
-            </div>
-            <div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success" role="alert">
-                        {{ session('success') }}
+                <div class="card-body py-2 px-0">
+                    @if (session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless table-sm mb-0">
+                            <tbody>
+                                @foreach ($cuti as $cutisItem)
+                                    <tr>
+                                        <td>
+                                            <div class="d-inline-block align-middle">
+                                                <div class="d-inline-block">
+                                                    <h6 class="m-b-0">{{ $cutisItem->karyawan->nama }}</h6>
+                                                    <p class="m-b-0">{{ $cutisItem->jenis_cuti->value }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if ($cutisItem->status->value === 'pending')
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-warning f-12"></i> {{ $cutisItem->status->value }}</p>
+                                            @elseif ($cutisItem->status->value === 'disetujui')
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-success f-12"></i> {{ $cutisItem->status->value }}</p>
+                                            @else
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-danger f-12"></i> {{ $cutisItem->status->value }}</p>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex">
+                                                <a href="{{ route('hrd.pengajuan-cuti.show', $cutisItem->id) }}" class="btn avtar avtar-xs btn-light-info">
+                                                    <i class="ti ti-eye"></i>
+                                                </a>
+                                                
+                                                <form action="{{ route('hrd.pengajuan-cuti.destroy', $cutisItem->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            @if ($cutisItem->status->value === 'pending')
+                                                <form action="{{ route('hrd.pengajuan-cuti.approve', $cutisItem->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-success">
+                                                        <i class="ti ti-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('hrd.pengajuan-cuti.reject', $cutisItem->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-danger">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                @endif
-
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Karyawan</th>
-                                <th>Tanggal Mulai</th>
-                                <th>Tanggal Selesai</th>
-                                <th>Jenis Cuti</th>
-                                <th>Alasan</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($cutis as $cuti)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $cuti->karyawan->nama }}</td>
-                                    <td>{{ $cuti->tanggal_mulai->format('d-m-Y') }}</td>
-                                    <td>{{ $cuti->tanggal_selesai->format('d-m-Y') }}</td>
-                                    <td>{{ $cuti->jenis_cuti->value }}</td>
-                                    <td>{{ $cuti->alasan }}</td>
-                                    <td>
-                                        @if ($cuti->status->value === 'pending')
-                                            <span class="badge bg-warning">{{ $cuti->status->value }}</span>
-                                        @elseif ($cuti->status->value === 'disetujui')
-                                            <span class="badge bg-success">{{ $cuti->status->value }}</span>
-                                        @else
-                                            <span class="badge bg-danger">{{ $cuti->status->value }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('hrd.cutis.edit', $cuti->id) }}" class="btn btn-icon btn-warning">
-                                            <i class="feather icon-edit"></i>
-                                        </a>
-                                        <form action="{{ route('hrd.cutis.destroy', $cuti->id) }}" method="POST" style="display: inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-icon btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                                <i class="feather icon-trash-2"></i>
-                                            </button>
-                                        </form>
-                                        @if ($cuti->status->value === 'pending')
-                                            <form action="{{ route('hrd.cutis.approve', $cuti->id) }}" method="POST" style="display: inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-icon btn-success">
-                                                    <i class="feather icon-check"></i>
-                                                </button>
-                                            </form>
-                                            <form action="{{ route('hrd.cutis.reject', $cuti->id) }}" method="POST" style="display: inline-block;">
-                                                @csrf
-                                                <button type="submit" class="btn btn-icon btn-danger">
-                                                    <i class="feather icon-x"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@include('components.delete-confirmation-modal')
 @endsection
