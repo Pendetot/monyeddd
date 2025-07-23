@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
-use App\Http\Requests\StoreKaryawanRequest;
-use App\Http\Requests\UpdateKaryawanRequest;
 use Illuminate\Http\Request;
 
 class KaryawanController extends Controller
@@ -29,11 +27,21 @@ class KaryawanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreKaryawanRequest $request)
+    public function store(Request $request)
     {
-        Karyawan::create($request->validated());
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|max:255|unique:karyawans',
+            'alamat' => 'required|string',
+            'telepon' => 'required|string|max:20',
+            'jabatan' => 'required|string|max:255',
+            'penempatan' => 'required|string|max:255',
+            'status' => 'required|string',
+        ]);
 
-        return redirect()->route('karyawans.index')->with('success', 'Karyawan berhasil ditambahkan.');
+        Karyawan::create($request->all());
+
+        return redirect()->route('hrd.data-karyawan')->with('success', 'Karyawan berhasil ditambahkan!');
     }
 
     /**
@@ -41,7 +49,7 @@ class KaryawanController extends Controller
      */
     public function show(Karyawan $karyawan)
     {
-        //
+        return view('hrd.karyawans.show', compact('karyawan'));
     }
 
     /**
@@ -55,11 +63,21 @@ class KaryawanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateKaryawanRequest $request, Karyawan $karyawan)
+    public function update(Request $request, Karyawan $karyawan)
     {
-        $karyawan->update($request->validated());
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'required|string|max:255|unique:karyawans,nik,' . $karyawan->id,
+            'alamat' => 'required|string',
+            'telepon' => 'required|string|max:20',
+            'jabatan' => 'required|string|max:255',
+            'penempatan' => 'required|string|max:255',
+            'status' => 'required|string',
+        ]);
 
-        return redirect()->route('karyawans.index')->with('success', 'Karyawan berhasil diperbarui.');
+        $karyawan->update($request->all());
+
+        return redirect()->route('hrd.data-karyawan')->with('success', 'Karyawan berhasil diperbarui!');
     }
 
     /**
@@ -68,6 +86,6 @@ class KaryawanController extends Controller
     public function destroy(Karyawan $karyawan)
     {
         $karyawan->delete();
-        return redirect()->route('karyawans.index')->with('success', 'Karyawan berhasil dihapus.');
+        return redirect()->route('hrd.data-karyawan')->with('success', 'Karyawan berhasil dihapus!');
     }
 }
