@@ -9,13 +9,15 @@ use App\Enums\RoleEnum;
 
 class LoginController extends Controller
 {
-    public function showLoginForm($role)
+    public function showLoginForm(Request $request)
     {
+        $role = $request->segment(1);
         return view('auth.login', compact('role'));
     }
 
-    public function login(Request $request, $role)
+    public function login(Request $request)
     {
+        $role = $request->segment(1);
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
