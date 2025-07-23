@@ -11,7 +11,7 @@
                     <h3 class="card-title">Edit Surat Peringatan</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('surat-peringatans.update', $suratPeringatan->id) }}" method="POST">
+                    <form action="{{ route('hrd.surat-peringatan.update', $suratPeringatan->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
@@ -37,6 +37,11 @@
                             @error('jenis_sp')
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                             @enderror
+                            <small class="form-text text-muted">
+                                Rekomendasi: SP1, SP2, SP3.<br>
+                                SP1: Penalti Rp 100.000 x 3 bulan (dicek dari keuangan).<br>
+                                SP2: Penalti Rp 200.000 x 6 bulan (dicek dari keuangan).
+                            </small>
                         </div>
                         <div class="form-group">
                             <label for="tanggal_sp">Tanggal SP</label>
@@ -53,7 +58,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Update</button>
-                        <a href="{{ route('surat-peringatans.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('hrd.surat-peringatan') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
