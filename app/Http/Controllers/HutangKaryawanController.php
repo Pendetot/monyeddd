@@ -14,7 +14,7 @@ class HutangKaryawanController extends Controller
      */
     public function index()
     {
-        $hutangKaryawans = HutangKaryawan::with('karyawan')->get();
+        $hutangKaryawans = HutangKaryawan::with('user')->get();
         return view('keuangan.hutang_karyawans.index', compact('hutangKaryawans'));
     }
 
@@ -23,8 +23,8 @@ class HutangKaryawanController extends Controller
      */
     public function create()
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('keuangan.hutang_karyawans.create', compact('karyawans'));
+        $users = \App\Models\User::all();
+        return view('keuangan.hutang_karyawans.create', compact('users'));
     }
 
     /**
@@ -34,7 +34,7 @@ class HutangKaryawanController extends Controller
     {
         HutangKaryawan::create($request->validated());
 
-        return redirect()->route('hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil ditambahkan.');
+        return redirect()->route('keuangan.hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil ditambahkan.');
     }
 
     /**
@@ -50,8 +50,8 @@ class HutangKaryawanController extends Controller
      */
     public function edit(HutangKaryawan $hutangKaryawan)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('keuangan.hutang_karyawans.edit', compact('hutangKaryawan', 'karyawans'));
+        $users = \App\Models\User::all();
+        return view('keuangan.hutang_karyawans.edit', compact('hutangKaryawan', 'users'));
     }
 
     /**
@@ -61,7 +61,7 @@ class HutangKaryawanController extends Controller
     {
         $hutangKaryawan->update($request->validated());
 
-        return redirect()->route('hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil diperbarui.');
+        return redirect()->route('keuangan.hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil diperbarui.');
     }
 
     /**
@@ -70,6 +70,6 @@ class HutangKaryawanController extends Controller
     public function destroy(HutangKaryawan $hutangKaryawan)
     {
         $hutangKaryawan->delete();
-        return redirect()->route('hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil dihapus.');
+        return redirect()->route('keuangan.hutang-karyawans.index')->with('success', 'Hutang karyawan berhasil dihapus.');
     }
 }
