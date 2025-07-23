@@ -22,7 +22,7 @@ class UpdateHutangKaryawanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'sometimes|required|exists:karyawans,id',
+            'karyawan_id' => 'sometimes|required|exists:users,id',
             'jumlah_hutang' => 'sometimes|required|numeric|min:0',
             'tanggal_hutang' => 'sometimes|required|date',
             'status' => 'sometimes|required|in:lunas,belum_lunas',
