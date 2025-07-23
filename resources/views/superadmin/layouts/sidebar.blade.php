@@ -1,9 +1,9 @@
 <li class="pc-item pc-caption">
-  <label data-i18n="Navigasi">Navigasi</label>
+  <label data-i18n="Navigation">Navigation</label>
   <i class="ph-duotone ph-gauge"></i>
 </li>
 <li class="pc-item">
-  <a href="/dashboard" class="pc-link">
+  <a href="{{ route('superadmin.dashboard') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-gauge"></i>
     </span>
@@ -11,106 +11,100 @@
   </a>
 </li>
 
-@hasanyrole('superadmin|admin')
 <li class="pc-item pc-caption">
-  <label data-i18n="Manajemen Admin">Manajemen Admin</label>
+  <label data-i18n="SuperAdmin">SuperAdmin</label>
+  <i class="ph-duotone ph-user-crown"></i>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item"><a href="{{ route('superadmin.users.index') }}" class="pc-link">
     <span class="pc-micon">
-      <i class="ph-duotone ph-user-circle"></i>
+      <i class="ph-duotone ph-users-three"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Manajemen Pengguna">Manajemen Pengguna</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'admin']) }}" data-i18n="Daftar Admin">Daftar Admin</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'hrd']) }}" data-i18n="Daftar HRD">Daftar HRD</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'finance']) }}" data-i18n="Daftar Finance">Daftar Finance</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'guard']) }}" data-i18n="Daftar Satpam">Daftar Satpam</a></li>
-  </ul>
-</li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+    <span class="pc-mtext" data-i18n="Manajemen Pengguna">Manajemen Pengguna</span></a></li>
+<li class="pc-item"><a href="{{ route('superadmin.settings.index') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-gear"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Setting">Setting</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('setting.website') }}" data-i18n="Setting Website">Setting Website</a></li>
-  </ul>
-</li>
-@endhasanyrole
+    <span class="pc-mtext" data-i18n="Pengaturan Halaman">Pengaturan Halaman</span></a></li>
 
-@hasanyrole('superadmin|hrd')
 <li class="pc-item pc-caption">
-  <label data-i18n="Manajemen HRD">Manajemen HRD</label>
+  <label data-i18n="HRD">HRD</label>
+  <i class="ph-duotone ph-hard-hat"></i>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item"><a href="{{ route('hrd.data-karyawan') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-users-three"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Data Karyawan">Data Karyawan</span></a></li>
+<li class="pc-item"><a href="{{ route('hrd.pengajuan-cuti') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-calendar-blank"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Cuti & Resign">Cuti & Resign</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('hr.leave-requests.index') }}" data-i18n="Permohonan Cuti">Permohonan Cuti</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('hr.resignations.index') }}" data-i18n="Pengunduran Diri">Pengunduran Diri</a></li>
-  </ul>
-</li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+    <span class="pc-mtext" data-i18n="Pengajuan Cuti">Pengajuan Cuti</span></a></li>
+<li class="pc-item"><a href="{{ route('hrd.data-resign') }}" class="pc-link">
     <span class="pc-micon">
-      <i class="ph-duotone ph-warning"></i>
+      <i class="ph-duotone ph-door-open"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Disipliner & Transfer">Disipliner & Transfer</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('hr.disciplinaries.index') }}" data-i18n="Tindakan Disipliner">Tindakan Disipliner</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('hr.transfer-requests.index') }}" data-i18n="Permohonan Transfer">Permohonan Transfer</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('hrd.mutasi-karyawan.index') }}" data-i18n="Mutasi Karyawan">Mutasi Karyawan</a></li>
-  </ul>
-</li>
-@endhasanyrole
+    <span class="pc-mtext" data-i18n="Data Resign">Data Resign</span></a></li>
+<li class="pc-item"><a href="{{ route('hrd.surat-peringatan') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-warning-circle"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Surat Peringatan">Surat Peringatan</span></a></li>
+<li class="pc-item"><a href="{{ route('hrd.mutasi-karyawan') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-arrows-left-right"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Mutasi Karyawan">Mutasi Karyawan</span></a></li>
+<li class="pc-item"><a href="{{ route('hrd.administrasi-pelamar') }}" class="pc-link">
+    <span class="pc-micon">
+        <i class="ph-duotone ph-user-plus"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Daftar Pelamar">Daftar Pelamar</span></a></li>
 
-@hasanyrole('superadmin|finance')
+ 
+
+
 <li class="pc-item pc-caption">
-  <label data-i18n="Manajemen Keuangan">Manajemen Keuangan</label>
+  <label data-i18n="Keuangan">Keuangan</label>
+  <i class="ph-duotone ph-currency-dollar"></i>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item"><a href="{{ route('keuangan.hutang-karyawans.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-money"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Hutang Karyawan">Hutang Karyawan</span></a></li>
+<li class="pc-item"><a href="{{ route('keuangan.rekening-karyawans.index') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-bank"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Rekening Karyawan">Rekening Karyawan</span></a></li>
+<li class="pc-item"><a href="{{ route('keuangan.penalti-sp.index') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-currency-dollar"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Data Keuangan">Data Keuangan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('finance.accounts.index') }}" data-i18n="Data Rekening">Data Rekening</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('finance.salaries.index') }}" data-i18n="Gaji">Gaji</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('finance.debts.index') }}" data-i18n="Hutang">Hutang</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('finance.payment-histories.index') }}" data-i18n="Histori Pembayaran">Histori Pembayaran</a></li>
-  </ul>
-</li>
-@endhasanyrole
+    <span class="pc-mtext" data-i18n="Penalti SP">Penalti SP</span></a></li>
 
-@hasanyrole('superadmin|guard')
 <li class="pc-item pc-caption">
-  <label data-i18n="Manajemen Operasional">Manajemen Operasional</label>
+  <label data-i18n="Karyawan">Karyawan</label>
+  <i class="ph-duotone ph-tools"></i>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
-    <span class="pc-micon">
-      <i class="ph-duotone ph-clock"></i>
-    </span>
-    <span class="pc-mtext" data-i18n="Absensi & Laporan">Absensi & Laporan</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('operations.attendances.index') }}" data-i18n="Absensi">Absensi</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('operations.work-reports.index') }}" data-i18n="Laporan Kerja">Laporan Kerja</a></li>
-  </ul>
-</li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item">
+  <a href="{{ route('karyawan.kpis') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-chart-line"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Kinerja">Kinerja</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('operations.kpis.index') }}" data-i18n="KPI">KPI</a></li>
-  </ul>
+    <span class="pc-mtext" data-i18n="Penilaian KPI">Penilaian KPI</span>
+  </a>
 </li>
-@endhasanyrole
+<li class="pc-item"><a href="{{ route('karyawan.lap-dokumens') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-file-text"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Lapsem">Lapsem</span></a></li>
+<li class="pc-item"><a href="{{ route('karyawan.pembinaans') }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-users"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Pembinaan">Pembinaan</span></a></li>
+
+@include('pelamar.layouts.sidebar')
