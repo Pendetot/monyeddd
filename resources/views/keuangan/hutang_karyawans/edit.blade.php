@@ -11,7 +11,7 @@
                     <h3 class="card-title">Edit Hutang Karyawan</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('hutang-karyawans.update', $hutangKaryawan->id) }}" method="POST">
+                    <form action="{{ route('keuangan.hutang-karyawans.update', $hutangKaryawan->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
@@ -65,7 +65,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Update</button>
-                        <a href="{{ route('hutang-karyawans.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('keuangan.hutang-karyawans.index') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
