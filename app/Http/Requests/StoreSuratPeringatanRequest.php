@@ -23,10 +23,11 @@ class StoreSuratPeringatanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'jenis_sp' => ['required', Rule::in(['SP1', 'SP2', 'SP3'])],
             'tanggal_sp' => 'required|date',
             'keterangan' => 'nullable|string',
+            'penalty_amount' => 'nullable|numeric|min:0',
         ];
     }
 }
