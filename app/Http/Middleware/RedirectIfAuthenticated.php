@@ -30,9 +30,7 @@ class RedirectIfAuthenticated
                 if ($guard === 'keuangan') {
                     return redirect()->route('keuangan.dashboard');
                 }
-                if ($guard === 'operasional') {
-                    return redirect()->route('operasional.dashboard');
-                }
+                
                 return redirect(RouteServiceProvider::HOME);
             }
         }
