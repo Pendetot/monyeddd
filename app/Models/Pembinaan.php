@@ -15,4 +15,9 @@ class Pembinaan extends Model
         'catatan',
         'hasil',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'karyawan_id');
+    }
 }
