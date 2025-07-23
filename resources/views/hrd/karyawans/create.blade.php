@@ -11,7 +11,7 @@
                     <h3 class="card-title">Tambah Karyawan</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('karyawans.store') }}" method="POST">
+                    <form action="{{ route('hrd.data-karyawan.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="nama">Nama</label>
@@ -43,7 +43,12 @@
                         </div>
                         <div class="form-group">
                             <label for="jabatan">Jabatan</label>
-                            <input type="text" name="jabatan" id="jabatan" class="form-control @error('jabatan') is-invalid @enderror" value="{{ old('jabatan') }}">
+                            <select name="jabatan" id="jabatan" class="form-control @error('jabatan') is-invalid @enderror">
+                                <option value="">Pilih Jabatan</option>
+                                @foreach ($roles as $roleValue => $roleName)
+                                    <option value="{{ $roleValue }}" {{ old('jabatan') == $roleValue ? 'selected' : '' }}>{{ $roleName }}</option>
+                                @endforeach
+                            </select>
                             @error('jabatan')
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                             @enderror
@@ -68,7 +73,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan</button>
-                        <a href="{{ route('karyawans.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('hrd.data-karyawan.index') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
