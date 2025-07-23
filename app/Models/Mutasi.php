@@ -11,18 +11,26 @@ class Mutasi extends Model
 
     protected $fillable = [
         'karyawan_id',
+        'departemen_lama',
+        'departemen_baru',
         'jabatan_lama',
         'jabatan_baru',
         'alasan',
         'tanggal_mutasi',
+        'data_personal_berubah',
+        'jaminan_seragam_mutasi',
+        'seragam_mutasi',
     ];
 
     protected $casts = [
         'tanggal_mutasi' => 'date',
+        'data_personal_berubah' => 'boolean',
+        'jaminan_seragam_mutasi' => 'boolean',
+        'seragam_mutasi' => 'string', // Atau enum jika Anda membuat enum untuk ini
     ];
 
-    public function karyawan()
+    public function user()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(User::class, 'karyawan_id');
     }
 }
