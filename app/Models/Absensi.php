@@ -15,4 +15,9 @@ class Absensi extends Model
         'status_absensi',
         'keterangan',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'karyawan_id');
+    }
 }
