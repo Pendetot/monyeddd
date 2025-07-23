@@ -7,6 +7,11 @@ use App\Http\Requests\StoreSuratPeringatanRequest;
 use App\Http\Requests\UpdateSuratPeringatanRequest;
 use Illuminate\Http\Request;
 
+use App\Models\PenaltiSP;
+use App\Models\HutangKaryawan;
+
+use Illuminate\Support\Facades\DB;
+
 class SuratPeringatanController extends Controller
 {
     /**
@@ -14,17 +19,32 @@ class SuratPeringatanController extends Controller
      */
     public function index()
     {
-        $suratPeringatans = SuratPeringatan::with('karyawan')->get();
+        // Ambil ID surat peringatan terbaru untuk setiap karyawan
+        $latestSuratPeringatanIds = SuratPeringatan::selectRaw('MAX(id) as id')
+            ->groupBy('karyawan_id')
+            ->pluck('id');
+
+        // Ambil surat peringatan terbaru yang sesuai dengan filter jabatan
+        $suratPeringatans = SuratPeringatan::with('user')
+                                            ->whereIn('id', $latestSuratPeringatanIds) // Hanya sertakan SP terbaru
+                                            ->whereHas('user', function ($query) {
+                                                $query->where('role', '!=', 'hrd')
+                                                      ->where('role', '!=', 'keuangan');
+                                            })
+                                            ->get();
         return view('hrd.surat_peringatans.index', compact('suratPeringatans'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.surat_peringatans.create', compact('karyawans'));
+        $userId = $request->query('user_id');
+        $users = \App\Models\User::where('role', '!=', 'hrd')
+                                         ->where('role', '!=', 'keuangan')
+                                         ->get();
+        return view('hrd.surat_peringatans.create', compact('users', 'userId'));
     }
 
     /**
@@ -32,9 +52,43 @@ class SuratPeringatanController extends Controller
      */
     public function store(StoreSuratPeringatanRequest $request)
     {
-        SuratPeringatan::create($request->validated());
+        $validatedData = $request->validated();
 
-        return redirect()->route('surat-peringatans.index')->with('success', 'Surat Peringatan berhasil ditambahkan.');
+        $penaltyAmount = 0;
+        if ($validatedData['jenis_sp'] === 'SP1') {
+            $penaltyAmount = 100000;
+        } elseif ($validatedData['jenis_sp'] === 'SP2') {
+            $penaltyAmount = 200000;
+        } elseif ($validatedData['jenis_sp'] === 'SP3') {
+            $penaltyAmount = 300000;
+        }
+
+        $validatedData['penalty_amount'] = $penaltyAmount;
+
+        DB::transaction(function () use ($validatedData, $penaltyAmount) {
+            $suratPeringatan = SuratPeringatan::create($validatedData);
+            $user = \App\Models\User::find($validatedData['karyawan_id']);
+            $penaltyAmount = $validatedData['penalty_amount'] ?? 0;
+
+            if ($penaltyAmount > 0 && $user && $user->hasRole(\App\Enums\RoleEnum::Karyawan)) {
+                PenaltiSP::create([
+                    'surat_peringatan_id' => $suratPeringatan->id,
+                    'karyawan_id' => $validatedData['karyawan_id'],
+                    'jumlah_penalti' => $penaltyAmount,
+                    'tanggal_pencatatan' => now(),
+                ]);
+
+                HutangKaryawan::create([
+                    'karyawan_id' => $validatedData['karyawan_id'],
+                    'jumlah' => $penaltyAmount,
+                    'alasan' => 'Penalti ' . $validatedData['jenis_sp'],
+                    'status' => 'belum_lunas',
+                    'surat_peringatan_id' => $suratPeringatan->id,
+                ]);
+            }
+        });
+
+        return redirect()->route('hrd.surat-peringatan')->with('success', 'Surat Peringatan berhasil ditambahkan.');
     }
 
     /**
@@ -42,7 +96,18 @@ class SuratPeringatanController extends Controller
      */
     public function show(SuratPeringatan $suratPeringatan)
     {
-        //
+        $historySuratPeringatan = SuratPeringatan::where('karyawan_id', $suratPeringatan->karyawan_id)
+                                                ->orderBy('tanggal_sp', 'asc')
+                                                ->get();
+
+        $penaltyMonths = 0;
+        if ($suratPeringatan->jenis_sp->value === 'SP1') {
+            $penaltyMonths = 3;
+        } elseif ($suratPeringatan->jenis_sp->value === 'SP2') {
+            $penaltyMonths = 6;
+        }
+
+        return view('hrd.surat_peringatans.show', compact('suratPeringatan', 'historySuratPeringatan', 'penaltyMonths'));
     }
 
     /**
@@ -59,9 +124,45 @@ class SuratPeringatanController extends Controller
      */
     public function update(UpdateSuratPeringatanRequest $request, SuratPeringatan $suratPeringatan)
     {
-        $suratPeringatan->update($request->validated());
+        $validatedData = $request->validated();
 
-        return redirect()->route('surat-peringatans.index')->with('success', 'Surat Peringatan berhasil diperbarui.');
+        $penaltyAmount = 0;
+        if ($validatedData['jenis_sp'] === 'SP1') {
+            $penaltyAmount = 100000;
+        } elseif ($validatedData['jenis_sp'] === 'SP2') {
+            $penaltyAmount = 200000;
+        }
+
+        $validatedData['penalty_amount'] = $penaltyAmount;
+
+        $suratPeringatan->update($validatedData);
+
+        $installments = 0;
+        if ($validatedData['jenis_sp'] === 'SP1') {
+            $installments = 3;
+        } elseif ($validatedData['jenis_sp'] === 'SP2') {
+            $installments = 6;
+        }
+
+        // Delete existing HutangKaryawan entries for this SuratPeringatan
+        \App\Models\HutangKaryawan::where('karyawan_id', $validatedData['karyawan_id'])
+                                ->where('asal_hutang', AsalHutangEnum::SuratPeringatan->value)
+                                ->delete();
+
+        if ($penaltyAmount > 0) {
+            for ($i = 0; $i < $installments; $i++) {
+                \App\Models\HutangKaryawan::create([
+                    'karyawan_id' => $validatedData['karyawan_id'],
+                    'jumlah' => $penaltyAmount / $installments,
+                    'alasan' => 'Penalti SP ' . $validatedData['jenis_sp'] . ' - Angsuran ' . ($i + 1),
+                    'status' => 'belum_lunas',
+                    'asal_hutang' => AsalHutangEnum::SuratPeringatan->value,
+                    'surat_peringatan_id' => $suratPeringatan->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('hrd.surat-peringatan')->with('success', 'Surat Peringatan berhasil diperbarui.');
     }
 
     /**
@@ -70,6 +171,12 @@ class SuratPeringatanController extends Controller
     public function destroy(SuratPeringatan $suratPeringatan)
     {
         $suratPeringatan->delete();
-        return redirect()->route('surat-peringatans.index')->with('success', 'Surat Peringatan berhasil dihapus.');
+        return redirect()->route('hrd.surat-peringatan')->with('success', 'Surat Peringatan berhasil dihapus.');
+    }
+
+    public function penaltiSpIndex()
+    {
+        $suratPeringatans = SuratPeringatan::with('user')
+        return view('keuangan.penalti_sp.index', compact('suratPeringatans'));
     }
 }
