@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->string('nik')->unique();
-            $table->text('alamat');
+            $table->string('alamat');
             $table->string('telepon');
             $table->string('jabatan');
             $table->string('penempatan');
-            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+            $table->string('status');
             $table->timestamps();
         });
     }
