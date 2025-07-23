@@ -10,7 +10,7 @@ class ResignController extends Controller
 {
     public function index()
     {
-        $resigns = Resign::all();
+        $resigns = Resign::with('user')->get();
         return view('hrd.resign.index', compact('resigns'));
     }
 
@@ -22,7 +22,7 @@ class ResignController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_pengajuan' => 'required|date',
             'tanggal_efektif' => 'required|date|after_or_equal:tanggal_pengajuan',
             'alasan' => 'required|string',
@@ -41,7 +41,7 @@ class ResignController extends Controller
     public function update(Request $request, Resign $resign)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_pengajuan' => 'required|date',
             'tanggal_efektif' => 'required|date|after_or_equal:tanggal_pengajuan',
             'alasan' => 'required|string',
