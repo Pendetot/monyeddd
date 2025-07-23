@@ -15,4 +15,9 @@ class RekeningKaryawan extends Model
         'nomor_rekening',
         'nama_pemilik',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'karyawan_id');
+    }
 }
