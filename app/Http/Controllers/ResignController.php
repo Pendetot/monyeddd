@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Resign;
-use App\Http\Requests\StoreResignRequest;
-use App\Http\Requests\UpdateResignRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ResignController extends Controller
 {
@@ -14,7 +13,7 @@ class ResignController extends Controller
      */
     public function index()
     {
-        $resigns = Resign::with('karyawan')->get();
+        $resigns = \App\Models\Resign::all();
         return view('hrd.resigns.index', compact('resigns'));
     }
 
@@ -23,65 +22,97 @@ class ResignController extends Controller
      */
     public function create()
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.resigns.create', compact('karyawans'));
+        return view('hrd.resigns.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreResignRequest $request)
+    public function store(Request $request)
     {
-        Resign::create($request->validated());
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'tanggal_pengajuan' => 'required|date',
+            'tanggal_efektif' => 'required|date|after_or_equal:tanggal_pengajuan',
+            'alasan' => 'required|string',
+            'status_resign' => 'required|string',
+        ]);
 
-        return redirect()->route('resigns.index')->with('success', 'Pengajuan resign berhasil ditambahkan.');
+        \App\Models\Resign::create($request->all());
+
+        return redirect()->route('hrd.data-resign')->with('success', 'Pengajuan resign berhasil ditambahkan!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Resign $resign)
+    public function show(\App\Models\Resign $resign)
     {
-        //
+        $resign->load('user'); // Memuat relasi user
+
+        // Hitung lama bekerja dalam tahun, bulan, dan hari
+        $lamaBekerja = null;
+        $tahunBekerja = 0;
+        $bulanBekerja = 0;
+        $hariBekerja = 0;
+
+        if ($resign->user && $resign->user->created_at) {
+            $tanggalBergabung = Carbon::parse($resign->user->created_at);
+            $tanggalResign = Carbon::parse($resign->tanggal_efektif);
+            $interval = $tanggalBergabung->diff($tanggalResign);
+
+            $tahunBekerja = $interval->y;
+            $bulanBekerja = $interval->m;
+            $hariBekerja = $interval->d;
+        }
+
+        return view('hrd.resigns.show', compact('resign', 'tahunBekerja', 'bulanBekerja', 'hariBekerja'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Resign $resign)
+    public function edit(\App\Models\Resign $resign)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.resigns.edit', compact('resign', 'karyawans'));
+        return view('hrd.resigns.edit', compact('resign'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateResignRequest $request, Resign $resign)
+    public function update(Request $request, \App\Models\Resign $resign)
     {
-        $resign->update($request->validated());
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'tanggal_pengajuan' => 'required|date',
+            'tanggal_efektif' => 'required|date|after_or_equal:tanggal_pengajuan',
+            'alasan' => 'required|string',
+            'status_resign' => 'required|string',
+        ]);
 
-        return redirect()->route('resigns.index')->with('success', 'Pengajuan resign berhasil diperbarui.');
+        $resign->update($request->all());
+
+        return redirect()->route('hrd.data-resign')->with('success', 'Pengajuan resign berhasil diperbarui!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Resign $resign)
+    public function destroy(\App\Models\Resign $resign)
     {
         $resign->delete();
-        return redirect()->route('resigns.index')->with('success', 'Pengajuan resign berhasil dihapus.');
+        return redirect()->route('hrd.data-resign')->with('success', 'Pengajuan resign berhasil dihapus!');
     }
 
-    public function approve(Resign $resign)
+    public function approve(\App\Models\Resign $resign)
     {
-        $resign->update(['status' => \App\Enums\StatusResignEnum::Disetujui]);
-        return redirect()->route('resigns.index')->with('success', 'Pengajuan resign berhasil disetujui.');
+        $resign->update(['status' => 'disetujui']);
+        return redirect()->route('hrd.data-resign')->with('success', 'Pengajuan resign berhasil disetujui!');
     }
 
-    public function reject(Resign $resign)
+    public function reject(\App\Models\Resign $resign)
     {
-        $resign->update(['status' => \App\Enums\StatusResignEnum::Ditolak]);
-        return redirect()->route('resigns.index')->with('success', 'Pengajuan resign berhasil ditolak.');
+        $resign->update(['status' => 'ditolak']);
+        return redirect()->route('hrd.data-resign')->with('success', 'Pengajuan resign berhasil ditolak!');
     }
 }
