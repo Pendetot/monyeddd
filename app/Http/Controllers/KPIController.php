@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Operasional\KPI\StoreKPIRequest;
+use App\Http\Requests\Operasional\KPI\UpdateKPIRequest;
 use App\Models\KPI;
-use App\Http\Requests\StoreKPIRequest;
-use App\Http\Requests\UpdateKPIRequest;
 use Illuminate\Http\Request;
 
 class KPIController extends Controller
@@ -14,7 +15,7 @@ class KPIController extends Controller
      */
     public function index()
     {
-        $kpis = KPI::with('karyawan')->get();
+        $kpis = KPI::with('user')->get();
         return view('operasional.kpis.index', compact('kpis'));
     }
 
@@ -23,8 +24,8 @@ class KPIController extends Controller
      */
     public function create()
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('operasional.kpis.create', compact('karyawans'));
+        $users = \App\Models\User::all();
+        return view('operasional.kpis.create', compact('users'));
     }
 
     /**
@@ -34,7 +35,7 @@ class KPIController extends Controller
     {
         KPI::create($request->validated());
 
-        return redirect()->route('kpis.index')->with('success', 'KPI berhasil ditambahkan.');
+        return redirect()->route('operasional.kpis.index')->with('success', 'KPI berhasil ditambahkan.');
     }
 
     /**
@@ -50,8 +51,8 @@ class KPIController extends Controller
      */
     public function edit(KPI $kPI)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('operasional.kpis.edit', compact('kPI', 'karyawans'));
+        $users = \App\Models\User::all();
+        return view('operasional.kpis.edit', compact('kPI', 'users'));
     }
 
     /**
@@ -61,7 +62,7 @@ class KPIController extends Controller
     {
         $kPI->update($request->validated());
 
-        return redirect()->route('kpis.index')->with('success', 'KPI berhasil diperbarui.');
+        return redirect()->route('operasional.kpis.index')->with('success', 'KPI berhasil diperbarui.');
     }
 
     /**
@@ -70,6 +71,6 @@ class KPIController extends Controller
     public function destroy(KPI $kPI)
     {
         $kPI->delete();
-        return redirect()->route('kpis.index')->with('success', 'KPI berhasil dihapus.');
+        return redirect()->route('operasional.kpis.index')->with('success', 'KPI berhasil dihapus.');
     }
 }
