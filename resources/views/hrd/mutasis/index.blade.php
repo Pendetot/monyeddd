@@ -5,57 +5,71 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Daftar Mutasi Karyawan</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('mutasis.create') }}" class="btn btn-primary btn-sm">Tambah Mutasi</a>
-                    </div>
+        <div class="col-md-12 col-xl-12">
+            <div class="card table-card">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <h5>Daftar Mutasi Karyawan</h5>
+                    
                 </div>
-                <div class="card-body">
+                <div class="card-body py-2 px-0">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Karyawan</th>
-                                <th>Jabatan Lama</th>
-                                <th>Jabatan Baru</th>
-                                <th>Alasan</th>
-                                <th>Tanggal Mutasi</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($mutasis as $mutasi)
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless table-sm mb-0">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $mutasi->karyawan->nama }}</td>
-                                    <td>{{ $mutasi->jabatan_lama }}</td>
-                                    <td>{{ $mutasi->jabatan_baru }}</td>
-                                    <td>{{ $mutasi->alasan }}</td>
-                                    <td>{{ $mutasi->tanggal_mutasi->format('d-m-Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('mutasis.edit', $mutasi->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                        <form action="{{ route('mutasis.destroy', $mutasi->id) }}" method="POST" style="display: inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                        </form>
-                                    </td>
+                                    <th>Nama Karyawan</th>
+                                    <th>Tanggal Mutasi</th>
+                                    <th>Data Personal Berubah</th>
+                                    <th>Jaminan Seragam Mutasi</th>
+                                    <th>Seragam Mutasi</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($mutasis as $mutasi)
+                                    <tr>
+                                        <td>
+                                            <div class="d-inline-block align-middle">
+                                                <div class="d-inline-block">
+                                                    <h6 class="m-b-0">{{ $mutasi->karyawan->nama }}</h6>
+                                                    <p class="m-b-0">{{ $mutasi->jabatan_lama }} -> {{ $mutasi->jabatan_baru }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="mb-0"><i class="ph-duotone ph-circle text-primary f-12"></i> {{ $mutasi->tanggal_mutasi->format('d M Y') }}</p>
+                                        </td>
+                                        <td>
+                                            <p class="mb-0">N/A</p> {{-- Placeholder for Data Personal Berubah --}}
+                                        </td>
+                                        <td>
+                                            <p class="mb-0">N/A</p> {{-- Placeholder for Jaminan Seragam Mutasi --}}
+                                        </td>
+                                        <td>
+                                            <p class="mb-0">N/A</p> {{-- Placeholder for Seragam Mutasi --}}
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('hrd.mutasi-karyawan.edit', $mutasi->id) }}" class="btn avtar avtar-xs btn-light-warning">
+                                                <i class="ti ti-pencil"></i>
+                                            </a>
+                                            <button type="button" class="btn avtar avtar-xs btn-light-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-action="{{ route('hrd.mutasi-karyawan.destroy', $mutasi->id) }}">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@include('components.delete-confirmation-modal')
 @endsection
