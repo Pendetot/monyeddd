@@ -5,69 +5,76 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Daftar Pelamar</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('pelamars.create') }}" class="btn btn-primary btn-sm">Tambah Pelamar</a>
+        <div class="col-md-12 col-xl-12">
+            <div class="card table-card">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <h5>Daftar Pelamar</h5>
+                    <div class="dropdown">
+                        <a class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none" href="#"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                class="material-icons-two-tone f-18">more_vert</i></a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="{{ route('hrd.administrasi-pelamar.create') }}">Tambah Pelamar Baru</a>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body py-2 px-0">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Telepon</th>
-                                <th>Alamat</th>
-                                <th>Status Aplikasi</th>
-                                <th>Tanggal Interview</th>
-                                <th>Catatan HRD</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($pelamars as $pelamar)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $pelamar->nama }}</td>
-                                    <td>{{ $pelamar->email }}</td>
-                                    <td>{{ $pelamar->telepon }}</td>
-                                    <td>{{ $pelamar->alamat }}</td>
-                                    <td>
-                                        @if ($pelamar->status_aplikasi === 'pending')
-                                            <span class="badge bg-warning">{{ $pelamar->status_aplikasi }}</span>
-                                        @elseif ($pelamar->status_aplikasi === 'diterima')
-                                            <span class="badge bg-success">{{ $pelamar->status_aplikasi }}</span>
-                                        @else
-                                            <span class="badge bg-danger">{{ $pelamar->status_aplikasi }}</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $pelamar->tanggal_interview ? $pelamar->tanggal_interview->format('d-m-Y') : '-' }}</td>
-                                    <td>{{ $pelamar->catatan_hrd ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ route('pelamars.edit', $pelamar->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                        <form action="{{ route('pelamars.destroy', $pelamar->id) }}" method="POST" style="display: inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless table-sm mb-0">
+                            <tbody>
+                                @foreach ($pelamars as $pelamar)
+                                    <tr>
+                                        <td>
+                                            <div class="d-inline-block align-middle">
+                                                <div class="d-inline-block">
+                                                    <h6 class="m-b-0">{{ $pelamar->nama }}</h6>
+                                                    <p class="m-b-0">{{ $pelamar->email }}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if ($pelamar->status_aplikasi === 'pending')
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-warning f-12"></i> {{ $pelamar->status_aplikasi }}</p>
+                                            @elseif ($pelamar->status_aplikasi === 'diterima')
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-success f-12"></i> {{ $pelamar->status_aplikasi }}</p>
+                                            @else
+                                                <p class="mb-0"><i class="ph-duotone ph-circle text-danger f-12"></i> {{ $pelamar->status_aplikasi }}</p>
+                                            @endif
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="{{ route('hrd.administrasi-pelamar.show', $pelamar->id) }}" class="btn avtar avtar-xs btn-light-primary">
+                                                <i class="ti ti-eye"></i>
+                                            </a>
+                                            @if ($pelamar->status_aplikasi === 'pending')
+                                                <form action="{{ route('hrd.administrasi-pelamar.approve', $pelamar->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-success">
+                                                        <i class="ti ti-check"></i>
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('hrd.administrasi-pelamar.reject', $pelamar->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-danger">
+                                                        <i class="ti ti-x"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@include('components.delete-confirmation-modal')
 @endsection
