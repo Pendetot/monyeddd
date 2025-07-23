@@ -22,7 +22,7 @@ class CutiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'alasan' => 'required|string',
@@ -42,7 +42,7 @@ class CutiController extends Controller
     public function update(Request $request, Cuti $cuti)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'alasan' => 'required|string',
