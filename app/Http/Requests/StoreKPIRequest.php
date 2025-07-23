@@ -22,7 +22,7 @@ class StoreKPIRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'user_id' => 'required|exists:users,id',
             'periode' => 'required|string|max:255',
             'nilai_kpi' => 'required|integer|min:0|max:100',
             'evaluasi' => 'required|string',
