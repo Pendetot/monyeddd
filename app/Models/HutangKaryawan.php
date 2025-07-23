@@ -13,17 +13,22 @@ class HutangKaryawan extends Model
         'karyawan_id',
         'jumlah',
         'alasan',
-        'status',
         'asal_hutang',
+        'status',
+        'surat_peringatan_id',
     ];
 
     protected $casts = [
         'status' => \App\Enums\StatusHutangEnum::class,
-        'asal_hutang' => \App\Enums\AsalHutangEnum::class,
     ];
 
-    public function karyawan()
+    public function user()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(User::class, 'karyawan_id');
+    }
+
+    public function suratPeringatan()
+    {
+        return $this->belongsTo(SuratPeringatan::class);
     }
 }
