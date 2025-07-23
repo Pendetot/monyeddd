@@ -1,67 +1,84 @@
 @extends('layouts.app')
 
-@section('title', 'Manajemen Hutang Karyawan')
+@section('title', 'Daftar Hutang Karyawan')
 
 @section('content')
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Daftar Hutang Karyawan</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('hutang-karyawans.create') }}" class="btn btn-primary btn-sm">Tambah Hutang Karyawan</a>
+        <div class="col-md-12 col-xl-12">
+            <div class="card table-card">
+                <div class="card-header d-flex align-items-center justify-content-between py-3">
+                    <h5>Daftar Hutang Karyawan</h5>
+                    <div class="dropdown">
+                        <a class="avtar avtar-xs btn-link-secondary dropdown-toggle arrow-none" href="#"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                class="material-icons-two-tone f-18">more_vert</i></a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <a class="dropdown-item" href="{{ route('keuangan.hutang-karyawans.create') }}">Tambah Hutang Baru</a>
+                        </div>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body py-2 px-0">
                     @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
-
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Karyawan</th>
-                                <th>Jumlah</th>
-                                <th>Alasan</th>
-                                <th>Asal Hutang</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($hutangKaryawans as $hutang)
+                    <div class="table-responsive">
+                        <table class="table table-hover table-borderless table-sm mb-0">
+                            <thead>
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $hutang->karyawan->nama }}</td>
-                                    <td>{{ number_format($hutang->jumlah, 2, ',', '.') }}</td>
-                                    <td>{{ $hutang->alasan }}</td>
-                                    <td>{{ $hutang->asal_hutang->value }}</td>
-                                    <td>
-                                        @if ($hutang->status->value === 'belum_lunas')
-                                            <span class="badge bg-warning">{{ $hutang->status->value }}</span>
-                                        @else
-                                            <span class="badge bg-success">{{ $hutang->status->value }}</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('hutang-karyawans.edit', $hutang->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                        <form action="{{ route('hutang-karyawans.destroy', $hutang->id) }}" method="POST" style="display: inline-block;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">Hapus</button>
-                                        </form>
-                                    </td>
+                                    <th>Nama Karyawan</th>
+                                    <th>Jumlah</th>
+                                    <th>Alasan</th>
+                                    <th>Status</th>
+                                    <th>Asal Hutang</th>
+                                    <th class="text-end">Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($hutangKaryawans as $hutang)
+                                    <tr>
+                                        <td>{{ $hutang->karyawan->nama }}</td>
+                                        <td>Rp {{ number_format($hutang->jumlah, 0, ',', '.') }}</td>
+                                        <td>{{ $hutang->alasan }}</td>
+                                        <td>{{ str_replace('_', ' ', ucfirst($hutang->status->value)) }}</td>
+                                        <td>
+                                            {{ $hutang->asal_hutang->value }}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex">
+                                                @if($hutang->asal_hutang->value === 'sp' && $hutang->suratPeringatan)
+                                                    <a href="{{ route('keuangan.surat-peringatan.show', $hutang->surat_peringatan_id) }}" class="btn avtar avtar-xs btn-light-info">
+                                                        <i class="ti ti-eye"></i>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('keuangan.hutang-karyawans.show', $hutang->id) }}" class="btn avtar avtar-xs btn-light-info">
+                                                        <i class="ti ti-eye"></i>
+                                                    </a>
+                                                @endif
+                                                <a href="{{ route('keuangan.hutang-karyawans.edit', $hutang->id) }}" class="btn avtar avtar-xs btn-light-warning">
+                                                    <i class="ti ti-pencil"></i>
+                                                </a>
+                                                <form action="{{ route('keuangan.hutang-karyawans.destroy', $hutang->id) }}" method="POST" style="display: inline-block;">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn avtar avtar-xs btn-light-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@include('components.delete-confirmation-modal')
 @endsection
