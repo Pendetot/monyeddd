@@ -36,7 +36,7 @@ class MutasiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_mutasi' => 'required|date',
             'departemen_lama' => 'required|string|max:255',
             'departemen_baru' => 'required|string|max:255',
@@ -52,7 +52,7 @@ class MutasiController extends Controller
     public function update(Request $request, Mutasi $mutasi)
     {
         $request->validate([
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_mutasi' => 'required|date',
             'departemen_lama' => 'required|string|max:255',
             'departemen_baru' => 'required|string|max:255',
