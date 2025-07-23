@@ -22,7 +22,7 @@ class StoreCutiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'jenis_cuti' => 'required|string|max:255',
