@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Models\RekeningKaryawan;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,8 @@ class RekeningKaryawanController extends Controller
      */
     public function index()
     {
-        //
+        $rekeningKaryawans = RekeningKaryawan::all();
+        return view('keuangan.rekening_karyawans.index', compact('rekeningKaryawans'));
     }
 
     /**
@@ -20,7 +22,8 @@ class RekeningKaryawanController extends Controller
      */
     public function create()
     {
-        //
+        $users = \App\Models\User::all();
+        return view('keuangan.rekening_karyawans.create', compact('users'));
     }
 
     /**
@@ -28,7 +31,16 @@ class RekeningKaryawanController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'nama_bank' => 'required|string|max:255',
+            'nomor_rekening' => 'required|string|max:255',
+            'nama_pemilik' => 'required|string|max:255',
+        ]);
+
+        RekeningKaryawan::create($request->all());
+
+        return redirect()->route('keuangan.rekening-karyawans.index')->with('success', 'Rekening karyawan berhasil ditambahkan.');
     }
 
     /**
@@ -36,7 +48,7 @@ class RekeningKaryawanController extends Controller
      */
     public function show(RekeningKaryawan $rekeningKaryawan)
     {
-        //
+        return view('keuangan.rekening_karyawans.show', compact('rekeningKaryawan'));
     }
 
     /**
@@ -44,7 +56,8 @@ class RekeningKaryawanController extends Controller
      */
     public function edit(RekeningKaryawan $rekeningKaryawan)
     {
-        //
+        $users = \App\Models\User::all();
+        return view('keuangan.rekening_karyawans.edit', compact('rekeningKaryawan', 'users'));
     }
 
     /**
@@ -52,7 +65,16 @@ class RekeningKaryawanController extends Controller
      */
     public function update(Request $request, RekeningKaryawan $rekeningKaryawan)
     {
-        //
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'nama_bank' => 'required|string|max:255',
+            'nomor_rekening' => 'required|string|max:255',
+            'nama_pemilik' => 'required|string|max:255',
+        ]);
+
+        $rekeningKaryawan->update($request->all());
+
+        return redirect()->route('keuangan.rekening-karyawans.index')->with('success', 'Rekening karyawan berhasil diperbarui.');
     }
 
     /**
@@ -60,6 +82,6 @@ class RekeningKaryawanController extends Controller
      */
     public function destroy(RekeningKaryawan $rekeningKaryawan)
     {
-        //
+        $rekeningKaryawan->delete();
+        return redirect()->route('keuangan.rekening-karyawans.index')->with('success', 'Rekening karyawan berhasil dihapus.');
     }
-}
