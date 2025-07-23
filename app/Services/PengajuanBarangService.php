@@ -14,7 +14,7 @@ class PengajuanBarangService
         $pengajuan = PengajuanBarang::create($data);
 
         // Notify Logistic
-        $logisticUsers = User::where('role', 'logistic')->get();
+        $logisticUsers = User::where('role', 'logistik')->get();
         Notification::send($logisticUsers, new PengajuanBarangNotification($pengajuan, 'new_request_logistic'));
 
         return $pengajuan;
@@ -40,7 +40,7 @@ class PengajuanBarangService
         $pengajuan->update([
             'status' => 'rejected',
             'logistic_notes' => $notes,
-            'rejected_by' => 'logistic',
+            'rejected_by' => 'logistik',
             'rejected_at' => now(),
         ]);
 
@@ -59,7 +59,7 @@ class PengajuanBarangService
         ]);
 
         // Notify Logistic
-        $logisticUsers = User::where('role', 'logistic')->get();
+        $logisticUsers = User::where('role', 'logistik')->get();
         Notification::send($logisticUsers, new PengajuanBarangNotification($pengajuan, 'approved_by_superadmin'));
 
         return $pengajuan;
@@ -70,12 +70,13 @@ class PengajuanBarangService
         $pengajuan->update([
             'status' => 'rejected',
             'superadmin_notes' => $notes,
+            'superadmin_approved_at' => null,
             'rejected_by' => 'superadmin',
             'rejected_at' => now(),
         ]);
 
         // Notify Logistic
-        $logisticUsers = User::where('role', 'logistic')->get();
+        $logisticUsers = User::where('role', 'logistik')->get();
         Notification::send($logisticUsers, new PengajuanBarangNotification($pengajuan, 'rejected_by_superadmin'));
 
         return $pengajuan;

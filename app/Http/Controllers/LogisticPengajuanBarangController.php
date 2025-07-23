@@ -21,7 +21,7 @@ class LogisticPengajuanBarangController extends Controller
         $approvedBySuperadmin = PengajuanBarang::where('status', 'approved')->get();
         $itemStatusUpdates = PengajuanBarang::whereIn('status', ['item_not_ready', 'item_ready'])->get();
 
-        return view('logistic.pengajuan_barang.index', compact('pendingRequests', 'approvedBySuperadmin', 'itemStatusUpdates'));
+        return view('logistik.pengajuan_barang.index', compact('pendingRequests', 'approvedBySuperadmin', 'itemStatusUpdates'));
     }
 
     public function approve(Request $request, PengajuanBarang $pengajuan)

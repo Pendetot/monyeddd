@@ -245,11 +245,9 @@ Route::middleware(['auth', 'check.role:' . RoleEnum::Karyawan->value])->prefix('
     ]);
 });
 
-// Guard Routes
+// Logistik Routes
 Route::middleware(['auth', 'check.role:' . RoleEnum::Logistik->value])->prefix('logistik')->name('logistik.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('logistik.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\LogistikDashboardController::class, 'index'])->name('dashboard');
     // Pengajuan Barang Routes for Logistic
     Route::get('/pengajuan-barang', [App\Http\Controllers\LogisticPengajuanBarangController::class, 'index'])->name('pengajuan-barang.index');
     Route::post('/pengajuan-barang/{pengajuan_barang}/approve', [App\Http\Controllers\LogisticPengajuanBarangController::class, 'approve'])->name('pengajuan-barang.approve');

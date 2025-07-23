@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('superadmin_notes')->nullable();
             $table->timestamp('logistic_approved_at')->nullable();
             $table->timestamp('superadmin_approved_at')->nullable();
-            $table->enum('rejected_by', ['logistic', 'superadmin'])->nullable();
+            $table->enum('rejected_by', ['logistik', 'superadmin'])->nullable();
             $table->timestamp('rejected_at')->nullable();
             $table->timestamps();
         });
