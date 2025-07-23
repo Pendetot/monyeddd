@@ -23,7 +23,7 @@ class StoreResignRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'tanggal_pengajuan' => 'required|date',
             'tanggal_efektif' => 'required|date|after_or_equal:tanggal_pengajuan',
             'alasan' => 'required|string',
