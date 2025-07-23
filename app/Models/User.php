@@ -48,4 +48,14 @@ class User extends Authenticatable
     {
         return $this->role === $role;
     }
+
+    public function pelamar()
+    {
+        return $this->hasOne(Pelamar::class);
+    }
+
+    public function pengajuanBarangs()
+    {
+        return $this->hasMany(PengajuanBarang::class, 'hrd_id');
+    }
 }
