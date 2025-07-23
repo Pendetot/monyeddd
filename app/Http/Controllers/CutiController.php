@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Http\Requests\HRD\Cuti\StoreCutiRequest;
+use App\Http\Requests\HRD\Cuti\UpdateCutiRequest;
 use App\Models\Cuti;
-use App\Http\Requests\StoreCutiRequest;
-use App\Http\Requests\UpdateCutiRequest;
 use Illuminate\Http\Request;
 
 class CutiController extends Controller
@@ -14,8 +15,8 @@ class CutiController extends Controller
      */
     public function index()
     {
-        $cutis = Cuti::with('karyawan')->get();
-        return view('hrd.cutis.index', compact('cutis'));
+        $cuti = Cuti::all();
+        return view('hrd.cutis.index', compact('cuti'));
     }
 
     /**
@@ -23,8 +24,7 @@ class CutiController extends Controller
      */
     public function create()
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.cutis.create', compact('karyawans'));
+        return view('hrd.cutis.create');
     }
 
     /**
@@ -33,8 +33,7 @@ class CutiController extends Controller
     public function store(StoreCutiRequest $request)
     {
         Cuti::create($request->validated());
-
-        return redirect()->route('cutis.index')->with('success', 'Pengajuan cuti berhasil ditambahkan.');
+        return redirect()->route('hrd.pengajuan-cuti')->with('success', 'Cuti berhasil ditambahkan!');
     }
 
     /**
@@ -42,7 +41,7 @@ class CutiController extends Controller
      */
     public function show(Cuti $cuti)
     {
-        //
+        return view('hrd.cutis.show', compact('cuti'));
     }
 
     /**
@@ -50,8 +49,7 @@ class CutiController extends Controller
      */
     public function edit(Cuti $cuti)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.cutis.edit', compact('cuti', 'karyawans'));
+        return view('hrd.cutis.edit', compact('cuti'));
     }
 
     /**
@@ -60,8 +58,7 @@ class CutiController extends Controller
     public function update(UpdateCutiRequest $request, Cuti $cuti)
     {
         $cuti->update($request->validated());
-
-        return redirect()->route('cutis.index')->with('success', 'Pengajuan cuti berhasil diperbarui.');
+        return redirect()->route('hrd.pengajuan-cuti')->with('success', 'Cuti berhasil diperbarui!');
     }
 
     /**
@@ -70,18 +67,18 @@ class CutiController extends Controller
     public function destroy(Cuti $cuti)
     {
         $cuti->delete();
-        return redirect()->route('cutis.index')->with('success', 'Pengajuan cuti berhasil dihapus.');
+        return redirect()->route('hrd.pengajuan-cuti')->with('success', 'Cuti berhasil dihapus!');
     }
 
     public function approve(Cuti $cuti)
     {
-        $cuti->update(['status' => \App\Enums\StatusCutiEnum::Disetujui]);
-        return redirect()->route('cutis.index')->with('success', 'Pengajuan cuti berhasil disetujui.');
+        $cuti->update(['status' => 'disetujui']);
+        return redirect()->route('hrd.pengajuan-cuti')->with('success', 'Cuti berhasil disetujui!');
     }
 
     public function reject(Cuti $cuti)
     {
-        $cuti->update(['status' => \App\Enums\StatusCutiEnum::Ditolak]);
-        return redirect()->route('cutis.index')->with('success', 'Pengajuan cuti berhasil ditolak.');
+        $cuti->update(['status' => 'ditolak']);
+        return redirect()->route('hrd.pengajuan-cuti')->with('success', 'Cuti berhasil ditolak!');
     }
 }
