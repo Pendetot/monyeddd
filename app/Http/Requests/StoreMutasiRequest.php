@@ -22,7 +22,7 @@ class StoreMutasiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'jabatan_lama' => 'required|string|max:255',
             'jabatan_baru' => 'required|string|max:255',
             'alasan' => 'required|string',
