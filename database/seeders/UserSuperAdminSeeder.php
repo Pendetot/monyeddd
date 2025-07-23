@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use App\Enums\RoleEnum;
+use Illuminate\Support\Facades\Hash;
 
 class UserSuperAdminSeeder extends Seeder
 {
@@ -15,11 +14,11 @@ class UserSuperAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'superadmin@example.com'],
+        User::updateOrCreate(
+            ['email' => 'superadmin@lazydev.dev'],
             [
                 'name' => 'Super Admin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('racube21'),
                 'role' => RoleEnum::SuperAdmin,
             ]
         );
