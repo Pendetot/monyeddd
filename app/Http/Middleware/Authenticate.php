@@ -20,8 +20,9 @@ class Authenticate extends Middleware
                 return route('hrd.showLoginForm');
             } elseif ($request->is('keuangan/*') || $request->is('keuangan')) {
                 return route('keuangan.showLoginForm');
-            } elseif ($request->is('operasional/*') || $request->is('operasional')) {
-                return route('operasional.showLoginForm');
+            
+            } elseif ($request->is('logistik/*') || $request->is('logistik')) {
+                return route('logistik.showLoginForm');
             }
             return route('login'); // Default fallback
         }
