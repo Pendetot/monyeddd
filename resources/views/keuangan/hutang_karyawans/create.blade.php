@@ -11,7 +11,7 @@
                     <h3 class="card-title">Tambah Hutang Karyawan</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('hutang-karyawans.store') }}" method="POST">
+                    <form action="{{ route('keuangan.hutang-karyawans.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="karyawan_id">Karyawan</label>
@@ -64,7 +64,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan</button>
-                        <a href="{{ route('hutang-karyawans.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('keuangan.hutang-karyawans.index') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
