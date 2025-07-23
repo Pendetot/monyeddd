@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\RoleEnum;
+use App\Models\Setting;
 
 class HomeController extends Controller
 {
@@ -33,12 +34,13 @@ class HomeController extends Controller
             return redirect()->route('hrd.dashboard');
         } elseif ($user->hasRole(RoleEnum::Keuangan)) {
             return redirect()->route('keuangan.dashboard');
-        } elseif ($user->hasRole(RoleEnum::Operasional)) {
-            return redirect()->route('operasional.dashboard');
-        } elseif ($user->hasRole(RoleEnum::Guard)) {
-            return redirect()->route('guard.dashboard');
+        
+        } elseif ($user->hasRole(RoleEnum::Logistik)) {
+            return redirect()->route('logistik.dashboard');
         } else {
-            return view('home'); // Default dashboard for other roles or if no specific role is matched
+            $is_form_enabled = Setting::where('key', 'is_form_enabled')->first();
+            $is_form_enabled = $is_form_enabled ? ($is_form_enabled->value === 'true') : true; // Default to true if not set
+            return view('home', compact('is_form_enabled'));
         }
     }
 }
