@@ -11,50 +11,31 @@ class AdministrasiPelamarController extends Controller
     public function index()
     {
         $pelamars = Pelamar::all();
-        return view('hrd.administrasipelamar.index', compact('pelamars'));
+        return view('hrd.administrasi_pelamar.index', compact('pelamars'));
     }
 
-    public function create()
+    public function show(Pelamar $pelamar)
     {
-        return view('hrd.administrasipelamar.create');
+        return view('hrd.administrasi_pelamar.show', compact('pelamar'));
     }
 
-    public function store(Request $request)
+    public function approve(Pelamar $pelamar)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:pelamars',
-            'posisi_dilamar' => 'required|string|max:255',
-            'tanggal_lamar' => 'required|date',
-        ]);
-
-        Pelamar::create($request->all());
-
-        return redirect()->route('hrd.administrasi-pelamar')->with('success', 'Pelamar berhasil ditambahkan!');
+        $pelamar->status = 'diterima';
+        $pelamar->save();
+        return redirect()->back()->with('success', 'Pelamar berhasil diterima.');
     }
 
-    public function edit(Pelamar $administrasi_pelamar)
+    public function reject(Pelamar $pelamar)
     {
-        return view('hrd.administrasipelamar.edit', compact('administrasi_pelamar'));
+        $pelamar->status = 'ditolak';
+        $pelamar->save();
+        return redirect()->back()->with('success', 'Pelamar berhasil ditolak.');
     }
 
-    public function update(Request $request, Pelamar $administrasi_pelamar)
+    public function destroy(Pelamar $pelamar)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:pelamars,email,' . $administrasi_pelamar->id,
-            'posisi_dilamar' => 'required|string|max:255',
-            'tanggal_lamar' => 'required|date',
-        ]);
-
-        $administrasi_pelamar->update($request->all());
-
-        return redirect()->route('hrd.administrasi-pelamar')->with('success', 'Pelamar berhasil diperbarui!');
-    }
-
-    public function destroy(Pelamar $administrasi_pelamar)
-    {
-        $administrasi_pelamar->delete();
-        return redirect()->route('hrd.administrasi-pelamar')->with('success', 'Pelamar berhasil dihapus!');
+        $pelamar->delete();
+        return redirect()->back()->with('success', 'Pelamar berhasil dihapus.');
     }
 }
