@@ -2,7 +2,7 @@
 <nav class="pc-sidebar">
     <div class="navbar-wrapper">
         <div class="m-header">
-            <a href="//index" class="b-brand text-primary">
+            <a href="{{ route('home') }}" class="b-brand text-primary">
                 <!-- ========   Change your logo from here   ============ -->
                 <img src="{{ URL::asset('build/images/logo-dark.svg') }}" alt="logo image" class="logo-lg">
                 <span class="badge bg-brand-color-2 rounded-pill ms-1 theme-version">v1.2.0</span>
@@ -10,7 +10,21 @@
         </div>
         <div class="navbar-content">
             <ul class="pc-navbar">
-                @include('layouts.menu-list')
+                @if(Auth::check())
+                    @if(Auth::user()->hasRole(\App\Enums\RoleEnum::SuperAdmin))
+                        @include('superadmin.layouts.sidebar')
+                    @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::HRD))
+                        @include('hrd.layouts.sidebar')
+                    @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Keuangan))
+                        @include('keuangan.layouts.sidebar')
+                    @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Karyawan))
+                        @include('karyawan.layouts.sidebar')
+                    @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Logistik))
+                        @include('logistik.layouts.sidebar')
+                    @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Pelamar))
+                        @include('pelamar.layouts.sidebar')
+                    @endif
+                @endif
             </ul>
             <div class="card nav-action-card bg-brand-color-4">
                 <div class="card-body" style="background-image: url('/build/images/layout/nav-card-bg.svg')">
@@ -34,8 +48,8 @@
                                 aria-expanded="false" data-bs-offset="0,20">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-grow-1 me-2">
-                                        <h6 class="mb-0">Jonh Smith</h6>
-                                        <small>Administrator</small>
+                                        <h6 class="mb-0">{{ Auth::user()->name }}</h6>
+                                        <small>{{ Auth::user()->role->value }}</small>
                                     </div>
                                     <div class="flex-shrink-0">
                                         <div class="btn btn-icon btn-link-secondary avtar">
