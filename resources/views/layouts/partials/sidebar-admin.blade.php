@@ -3,7 +3,7 @@
   <i class="ph-duotone ph-gauge"></i>
 </li>
 <li class="pc-item">
-  <a href="/dashboard" class="pc-link">
+  <a href="{{ route('superadmin.dashboard') }}" class="pc-link">
     <span class="pc-micon">
       <i class="ph-duotone ph-gauge"></i>
     </span>
@@ -11,28 +11,45 @@
   </a>
 </li>
 <li class="pc-item pc-caption">
-  <label data-i18n="Manajemen Admin">Manajemen Admin</label>
+  <label data-i18n="Manajemen Pengguna">Manajemen Pengguna</label>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item">
+  <a href="{{ route('superadmin.users.index', ['role' => \App\Enums\RoleEnum::SuperAdmin->value]) }}" class="pc-link">
     <span class="pc-micon">
-      <i class="ph-duotone ph-user-circle"></i>
+      <i class="ph-duotone ph-user-shield"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Manajemen Pengguna">Manajemen Pengguna</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'admin']) }}" data-i18n="Daftar Admin">Daftar Admin</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'hrd']) }}" data-i18n="Daftar HRD">Daftar HRD</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'finance']) }}" data-i18n="Daftar Finance">Daftar Finance</a></li>
-    <li class="pc-item"><a class="pc-link" href="{{ route('admin.users.index', ['role' => 'guard']) }}" data-i18n="Daftar Satpam">Daftar Satpam</a></li>
-  </ul>
+    <span class="pc-mtext" data-i18n="Super Admin">Super Admin</span>
+  </a>
 </li>
-<li class="pc-item pc-hasmenu">
-  <a href="#!" class="pc-link">
+<li class="pc-item">
+  <a href="{{ route('superadmin.users.index', ['role' => \App\Enums\RoleEnum::HRD->value]) }}" class="pc-link">
     <span class="pc-micon">
-      <i class="ph-duotone ph-gear"></i>
+      <i class="ph-duotone ph-user-plus"></i>
     </span>
-    <span class="pc-mtext" data-i18n="Setting">Setting</span><span class="pc-arrow"><i data-feather="chevron-right"></i></span></a>
-  <ul class="pc-submenu">
-    <li class="pc-item"><a class="pc-link" href="{{ route('setting.website') }}" data-i18n="Setting Website">Setting Website</a></li>
-  </ul>
+    <span class="pc-mtext" data-i18n="HRD">HRD</span>
+  </a>
+</li>
+<li class="pc-item">
+  <a href="{{ route('superadmin.users.index', ['role' => \App\Enums\RoleEnum::Keuangan->value]) }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-currency-dollar"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Keuangan">Keuangan</span>
+  </a>
+</li>
+<li class="pc-item">
+  <a href="{{ route('superadmin.users.index', ['role' => \App\Enums\RoleEnum::Karyawan->value]) }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-settings"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Operasional">Operasional</span>
+  </a>
+</li>
+<li class="pc-item">
+  <a href="{{ route('superadmin.users.index', ['role' => \App\Enums\RoleEnum::Logistik->value]) }}" class="pc-link">
+    <span class="pc-micon">
+      <i class="ph-duotone ph-shield"></i>
+    </span>
+    <span class="pc-mtext" data-i18n="Guard">Guard</span>
+  </a>
 </li>
