@@ -23,19 +23,7 @@
     <body data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true" data-pc-direction="ltr" data-pc-theme="light">
         
         @include('layouts.loader')
-        @if(Auth::check())
-            @if(Auth::user()->hasRole(\App\Enums\RoleEnum::SuperAdmin))
-                @include('layouts.partials.sidebar-superadmin')
-            @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::HRD))
-                @include('layouts.partials.sidebar-hrd')
-            @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Keuangan))
-                @include('layouts.partials.sidebar-keuangan')
-            @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Operasional))
-                @include('layouts.partials.sidebar-operasional')
-            @elseif(Auth::user()->hasRole(\App\Enums\RoleEnum::Guard))
-                @include('layouts.partials.sidebar-guard')
-            @endif
-        @endif
+        @include('layouts.sidebar')
         @include('layouts.topbar')
 
         <!-- [ Main Content ] start -->
