@@ -14,6 +14,8 @@ class SuratPeringatan extends Model
         'jenis_sp',
         'tanggal_sp',
         'keterangan',
+        'penalty_amount',
+        'durasi_bulan',
     ];
 
     protected $casts = [
@@ -21,8 +23,18 @@ class SuratPeringatan extends Model
         'jenis_sp' => \App\Enums\JenisSPEnum::class,
     ];
 
-    public function karyawan()
+    public function user()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(User::class, 'karyawan_id');
+    }
+
+    public function hutangKaryawans()
+    {
+        return $this->hasMany(HutangKaryawan::class, 'karyawan_id', 'karyawan_id');
+    }
+
+    public function penalti()
+    {
+        return $this->hasOne(PenaltiSP::class);
     }
 }
