@@ -11,16 +11,19 @@
                     <h3 class="card-title">Tambah Surat Peringatan</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('surat-peringatans.store') }}" method="POST">
+                    <form action="{{ route('hrd.surat-peringatan.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="karyawan_id">Karyawan</label>
-                            <select name="karyawan_id" id="karyawan_id" class="form-control @error('karyawan_id') is-invalid @enderror">
+                            <select name="karyawan_id" id="karyawan_id" class="form-control @error('karyawan_id') is-invalid @enderror" {{ $karyawanId ? 'disabled' : '' }}>
                                 <option value="">Pilih Karyawan</option>
                                 @foreach ($karyawans as $karyawan)
-                                    <option value="{{ $karyawan->id }}" {{ old('karyawan_id') == $karyawan->id ? 'selected' : '' }}>{{ $karyawan->nama }}</option>
+                                    <option value="{{ $karyawan->id }}" {{ old('karyawan_id', $karyawanId) == $karyawan->id ? 'selected' : '' }}>{{ $karyawan->nama }}</option>
                                 @endforeach
                             </select>
+                            @if ($karyawanId)
+                                <input type="hidden" name="karyawan_id" value="{{ $karyawanId }}">
+                            @endif
                             @error('karyawan_id')
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                             @enderror
@@ -36,6 +39,11 @@
                             @error('jenis_sp')
                                 <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                             @enderror
+                            <small class="form-text text-muted">
+                                Rekomendasi: SP1, SP2, SP3.<br>
+                                SP1: Penalti Rp 100.000 x 3 bulan (dicek dari keuangan).<br>
+                                SP2: Penalti Rp 200.000 x 6 bulan (dicek dari keuangan).
+                            </small>
                         </div>
                         <div class="form-group">
                             <label for="tanggal_sp">Tanggal SP</label>
@@ -52,7 +60,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan</button>
-                        <a href="{{ route('surat-peringatans.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('hrd.surat-peringatan') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
