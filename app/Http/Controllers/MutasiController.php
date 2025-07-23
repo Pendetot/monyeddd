@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mutasi;
-use App\Http\Requests\StoreMutasiRequest;
-use App\Http\Requests\UpdateMutasiRequest;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class MutasiController extends Controller
@@ -14,62 +12,66 @@ class MutasiController extends Controller
      */
     public function index()
     {
-        $mutasis = Mutasi::with('karyawan')->get();
+        $mutasis = \App\Models\Mutasi::with('user')->get();
         return view('hrd.mutasis.index', compact('mutasis'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function edit(\App\Models\Mutasi $mutasi)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.mutasis.create', compact('karyawans'));
+        return view('hrd.mutasis.edit', compact('mutasi'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreMutasiRequest $request)
+    public function create()
     {
-        Mutasi::create($request->validated());
+        return view('hrd.mutasis.create');
+    }
 
-        return redirect()->route('mutasis.index')->with('success', 'Mutasi berhasil ditambahkan.');
+    public function store(Request $request)
+    {
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'tanggal_mutasi' => 'required|date',
+            'departemen_lama' => 'required|string|max:255',
+            'departemen_baru' => 'required|string|max:255',
+            'jabatan_lama' => 'required|string|max:255',
+            'jabatan_baru' => 'required|string|max:255',
+        ]);
+
+        \App\Models\Mutasi::create($request->all());
+
+        return redirect()->route('superadmin.hrd.mutasi-karyawan')->with('success', 'Mutasi berhasil ditambahkan!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Mutasi $mutasi)
+    public function show(\App\Models\Mutasi $mutasi)
     {
-        //
+        $mutasi->load('user'); // Memuat relasi user
+        return view('hrd.mutasis.show', compact('mutasi'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Mutasi $mutasi)
+    public function update(Request $request, \App\Models\Mutasi $mutasi)
     {
-        $karyawans = \App\Models\Karyawan::all();
-        return view('hrd.mutasis.edit', compact('mutasi', 'karyawans'));
-    }
+        $request->validate([
+            'karyawan_id' => 'required|exists:users,id',
+            'tanggal_mutasi' => 'required|date',
+            'departemen_lama' => 'required|string|max:255',
+            'departemen_baru' => 'required|string|max:255',
+            'jabatan_lama' => 'required|string|max:255',
+            'jabatan_baru' => 'required|string|max:255',
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateMutasiRequest $request, Mutasi $mutasi)
-    {
-        $mutasi->update($request->validated());
+        $mutasi->update($request->all());
 
-        return redirect()->route('mutasis.index')->with('success', 'Mutasi berhasil diperbarui.');
+        return redirect()->route('hrd.mutasi-karyawan.index')->with('success', 'Mutasi berhasil diperbarui!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mutasi $mutasi)
+    public function destroy(string $id)
     {
-        $mutasi->delete();
-        return redirect()->route('mutasis.index')->with('success', 'Mutasi berhasil dihapus.');
+        //
     }
 }
