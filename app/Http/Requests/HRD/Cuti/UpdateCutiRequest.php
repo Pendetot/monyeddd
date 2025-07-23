@@ -22,7 +22,7 @@ class UpdateCutiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'sometimes|required|exists:karyawans,id',
+            'karyawan_id' => 'sometimes|required|exists:users,id',
             'tanggal_mulai' => 'sometimes|required|date',
             'tanggal_selesai' => 'sometimes|required|date|after_or_equal:tanggal_mulai',
             'jenis_cuti' => 'sometimes|required|string|max:255',
