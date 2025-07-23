@@ -11,7 +11,7 @@
                     <h3 class="card-title">Tambah Pelamar</h3>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('pelamars.store') }}" method="POST">
+                    <form action="{{ route('hrd.administrasi-pelamar.store') }}" method="POST">
                         @csrf
                         <div class="form-group">
                             <label for="nama">Nama</label>
@@ -63,7 +63,7 @@
                             @enderror
                         </div>
                         <button type="submit" class="btn btn-primary">Simpan</button>
-                        <a href="{{ route('pelamars.index') }}" class="btn btn-secondary">Batal</a>
+                        <a href="{{ route('hrd.administrasi-pelamar.index') }}" class="btn btn-secondary">Batal</a>
                     </form>
                 </div>
             </div>
