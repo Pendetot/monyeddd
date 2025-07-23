@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\HRD;
 
+use App\Enums\AsalHutangEnum;
+use App\Enums\StatusHutangEnum;
 use App\Http\Controllers\Controller;
-use App\Models\SuratPeringatan;
+use App\Models\HutangKaryawan;
 use Illuminate\Http\Request;
 
 class SuratPeringatanController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $suratPeringatans = \App\Models\SuratPeringatan::all();
@@ -47,11 +52,32 @@ class SuratPeringatanController extends Controller
             'keterangan' => 'nullable|string',
             'karyawan_type' => 'required|string',
             'karyawan_code' => 'required|string',
+            'penalty_amount' => 'nullable|numeric',
         ]);
 
-        \App\Models\SuratPeringatan::create($request->all());
+        $suratPeringatan = \App\Models\SuratPeringatan::create($request->all());
 
-        return redirect()->route('hrd.surat-peringatan.index')->with('success', 'Surat Peringatan berhasil ditambahkan!');
+        if (in_array($request->jenis_sp, ['SP1', 'SP2'])) {
+            \App\Models\HutangKaryawan::create([
+                'karyawan_code' => $request->karyawan_code,
+                'karyawan_type' => $request->karyawan_type,
+                'jumlah_hutang' => $request->penalty_amount,
+                'tanggal_hutang' => $request->tanggal_sp,
+                'asal_hutang' => \App\Enums\AsalHutangEnum::PINALTI,
+                'status' => \App\Enums\StatusHutangEnum::BELUM_LUNAS,
+                'keterangan' => $request->keterangan,
+            ]);
+        }
+
+        return redirect()->route('superadmin.hrd.surat-peringatan')->with('success', 'Surat Peringatan berhasil ditambahkan dan hutang karyawan telah dicatat.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
     }
 
     public function edit(\App\Models\SuratPeringatan $surat_peringatan)
@@ -83,7 +109,7 @@ class SuratPeringatanController extends Controller
 
         $surat_peringatan->update($request->all());
 
-        return redirect()->route('hrd.surat-peringatan.index')->with('success', 'Surat Peringatan berhasil diperbarui!');
+        return redirect()->route('superadmin.hrd.surat-peringatan')->with('success', 'Surat Peringatan berhasil diperbarui!');
     }
 
     public function destroy(\App\Models\SuratPeringatan $surat_peringatan)
