@@ -22,7 +22,7 @@ class StoreHutangKaryawanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'karyawan_id' => 'required|exists:karyawans,id',
+            'karyawan_id' => 'required|exists:users,id',
             'jumlah_hutang' => 'required|numeric|min:0',
             'tanggal_hutang' => 'required|date',
             'status' => 'required|in:lunas,belum_lunas',
