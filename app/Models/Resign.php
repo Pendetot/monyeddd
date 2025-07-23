@@ -23,8 +23,8 @@ class Resign extends Model
         'status' => \App\Enums\StatusResignEnum::class,
     ];
 
-    public function karyawan()
+    public function user()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->belongsTo(User::class, 'karyawan_id');
     }
 }
